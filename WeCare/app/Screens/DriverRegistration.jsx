@@ -1,55 +1,55 @@
-// screens/DriverRegistration.jsx
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
+import { useRouter } from "expo-router";
 
 export default function DriverRegistration() {
-    const [form, setForm] = useState({ name: "", surname: "", email: "", password: "" });
+    const router = useRouter();
 
-    const handleRegister = async () => {
-        if (!form.name || !form.surname || !form.email || !form.password) {
-            Alert.alert("Error", "Please fill in all fields");
-            return;
-        }
+    const [form, setForm] = useState({
+        driverName: "",
+        driverSurname: "",
+    });
+
+    const registerDriver = async () => {
+        const driverData = { driverName: form.driverName, driverSurname: form.driverSurname };
 
         try {
-            const response = await fetch("https://your-backend-domain.com/api/drivers", {
+            const response = await fetch("http://<YOUR_SERVER_IP>:8080/api/driver/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
+                body: JSON.stringify(driverData),
             });
 
             if (response.ok) {
                 Alert.alert("Success", "Driver registered successfully!");
-                setForm({ name: "", surname: "", email: "", password: "" });
+                router.push("/login");
             } else {
-                const errorData = await response.json();
-                Alert.alert("Error", errorData.message || "Registration failed");
+                Alert.alert("Error", "Registration failed!");
             }
-        } catch {
-            Alert.alert("Error", "Network error");
+        } catch (err) {
+            console.error(err);
+            Alert.alert("Error", "An error occurred!");
         }
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Driver Registration</Text>
+        <ScrollView style={styles.container}>
+            <Text style={styles.title}>Register Driver</Text>
 
-            <TextInput style={styles.input} placeholder="Name" value={form.name} onChangeText={(name) => setForm({ ...form, name })} />
-            <TextInput style={styles.input} placeholder="Surname" value={form.surname} onChangeText={(surname) => setForm({ ...form, surname })} />
-            <TextInput style={styles.input} placeholder="Email" value={form.email} keyboardType="email-address" autoCapitalize="none" onChangeText={(email) => setForm({ ...form, email })} />
-            <TextInput style={styles.input} placeholder="Password" value={form.password} secureTextEntry onChangeText={(password) => setForm({ ...form, password })} />
+            <TextInput placeholder="First Name" style={styles.input} value={form.driverName} onChangeText={(text) => setForm({ ...form, driverName: text })} />
+            <TextInput placeholder="Surname" style={styles.input} value={form.driverSurname} onChangeText={(text) => setForm({ ...form, driverSurname: text })} />
 
-            <TouchableOpacity style={styles.btn} onPress={handleRegister}>
+            <TouchableOpacity style={styles.btn} onPress={registerDriver}>
                 <Text style={styles.btnText}>Register</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 24, justifyContent: "center", backgroundColor: "#fff" },
-    title: { fontSize: 24, fontWeight: "700", marginBottom: 24, textAlign: "center" },
-    input: { height: 50, borderColor: "#C9D3DB", borderWidth: 1, borderRadius: 12, paddingHorizontal: 16, marginBottom: 16, fontSize: 16 },
-    btn: { backgroundColor: "#C743A2", paddingVertical: 14, borderRadius: 30, alignItems: "center" },
+    container: { flex: 1, padding: 24, backgroundColor: "#fff" },
+    title: { fontSize: 28, fontWeight: "700", marginBottom: 20 },
+    input: { borderWidth: 1, borderColor: "#C9D3DB", borderRadius: 12, padding: 12, marginBottom: 12 },
+    btn: { backgroundColor: "#C743A2", padding: 14, borderRadius: 30, alignItems: "center", marginTop: 10 },
     btnText: { color: "#fff", fontSize: 18, fontWeight: "600" },
 });
