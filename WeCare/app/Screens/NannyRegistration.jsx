@@ -1,156 +1,55 @@
+// screens/NannyRegistration.jsx
 import React, { useState } from "react";
-import {
-    StyleSheet,
-    SafeAreaView,
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    ScrollView,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 
 export default function NannyRegistration() {
-    const [form, setForm] = useState({
-        firstName: "",
-        lastName: "",
-        phone1: "",
-        phone2: "",
-        houseNumber: "",
-        streetName: "",
-        postalCode: "",
-    });
+    const [form, setForm] = useState({ name: "", surname: "", email: "", password: "" });
 
-    const handleRegister = () => {
-        console.log("Registering user:", form);
-    };
+    const handleRegister = async () => {
+        if (!form.name || !form.surname || !form.email || !form.password) {
+            Alert.alert("Error", "Please fill in all fields");
+            return;
+        }
 
-    const handleCancel = () => {
-        setForm({
-            firstName: "",
-            lastName: "",
-            phone1: "",
-            phone2: "",
-            houseNumber: "",
-            streetName: "",
-            postalCode: "",
-        });
+        try {
+            const response = await fetch("https://your-backend-domain.com/api/nannies", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+            });
+
+            if (response.ok) {
+                Alert.alert("Success", "Nanny registered successfully!");
+                setForm({ name: "", surname: "", email: "", password: "" });
+            } else {
+                const errorData = await response.json();
+                Alert.alert("Error", errorData.message || "Registration failed");
+            }
+        } catch {
+            Alert.alert("Error", "Network error");
+        }
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <ScrollView contentContainerStyle={styles.container}>
-                {/* Nanny Registration Heading */}
-                <Text style={styles.heading}>Nanny Registration</Text>
+        <View style={styles.container}>
+            <Text style={styles.title}>Nanny Registration</Text>
 
-                {/* Inputs */}
-                <TextInput
-                    style={styles.input}
-                    placeholder="First Name"
-                    placeholderTextColor="#a97f9c"
-                    value={form.firstName}
-                    onChangeText={(text) => setForm({ ...form, firstName: text })}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Last Name"
-                    placeholderTextColor="#a97f9c"
-                    value={form.lastName}
-                    onChangeText={(text) => setForm({ ...form, lastName: text })}
-                />
+            <TextInput style={styles.input} placeholder="Name" value={form.name} onChangeText={(name) => setForm({ ...form, name })} />
+            <TextInput style={styles.input} placeholder="Surname" value={form.surname} onChangeText={(surname) => setForm({ ...form, surname })} />
+            <TextInput style={styles.input} placeholder="Email" value={form.email} keyboardType="email-address" autoCapitalize="none" onChangeText={(email) => setForm({ ...form, email })} />
+            <TextInput style={styles.input} placeholder="Password" value={form.password} secureTextEntry onChangeText={(password) => setForm({ ...form, password })} />
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Phone Num 1"
-                    placeholderTextColor="#a97f9c"
-                    keyboardType="phone-pad"
-                    value={form.phone1}
-                    onChangeText={(text) => setForm({ ...form, phone1: text })}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Phone Num 2"
-                    placeholderTextColor="#a97f9c"
-                    keyboardType="phone-pad"
-                    value={form.phone2}
-                    onChangeText={(text) => setForm({ ...form, phone2: text })}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="House Number"
-                    placeholderTextColor="#a97f9c"
-                    value={form.houseNumber}
-                    onChangeText={(text) => setForm({ ...form, houseNumber: text })}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Street Name"
-                    placeholderTextColor="#a97f9c"
-                    value={form.streetName}
-                    onChangeText={(text) => setForm({ ...form, streetName: text })}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Postal Code"
-                    placeholderTextColor="#a97f9c"
-                    keyboardType="numeric"
-                    value={form.postalCode}
-                    onChangeText={(text) => setForm({ ...form, postalCode: text })}
-                />
-
-                {/* Buttons */}
-                <View style={styles.buttonRow}>
-                    <TouchableOpacity style={styles.button} onPress={handleCancel}>
-                        <Text style={styles.buttonText}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                        <Text style={styles.buttonText}>Register</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+            <TouchableOpacity style={styles.btn} onPress={handleRegister}>
+                <Text style={styles.btnText}>Register</Text>
+            </TouchableOpacity>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: "#d8d0d3",
-    },
-    container: {
-        padding: 24,
-    },
-    heading: {
-        fontSize: 20,
-        fontWeight: "700",
-        marginBottom: 20,
-        color: "#fff",
-        textAlign: "center",
-    },
-    input: {
-        borderRadius: 25,
-        padding: 14,
-        marginBottom: 16,
-        backgroundColor: "#fff",
-        fontSize: 15,
-        fontWeight: "500",
-        color: "#222",
-    },
-    buttonRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 30,
-    },
-    button: {
-        flex: 1,
-        paddingVertical: 12,
-        borderRadius: 30,
-        alignItems: "center",
-        marginHorizontal: 5,
-        backgroundColor: "#fff",
-    },
-    buttonText: {
-        color: "#222",
-        fontSize: 16,
-        fontWeight: "600",
-    },
+    container: { flex: 1, padding: 24, justifyContent: "center", backgroundColor: "#fff" },
+    title: { fontSize: 24, fontWeight: "700", marginBottom: 24, textAlign: "center" },
+    input: { height: 50, borderColor: "#C9D3DB", borderWidth: 1, borderRadius: 12, paddingHorizontal: 16, marginBottom: 16, fontSize: 16 },
+    btn: { backgroundColor: "#C743A2", paddingVertical: 14, borderRadius: 30, alignItems: "center" },
+    btnText: { color: "#fff", fontSize: 18, fontWeight: "600" },
 });
