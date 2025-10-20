@@ -112,13 +112,13 @@ export default function App() {
         </View>
 
         <TouchableOpacity
-          onPress={() => {
-            // TODO: Add sign-up navigation
-          }}
+            onPress={() => {
+              router.push("/Screens/signUpPage");
+            }}
+            style={{ marginTop: 24, alignSelf: "center" }} // space below form & centered
         >
-          <Text style={styles.formFooter}>
-            Don't have an account?{" "}
-            <Text style={{ textDecorationLine: "underline" }}>Sign up</Text>
+          <Text style={[styles.formFooter, { color: "#FF87E1", textDecorationLine: "underline" }]}>
+            Don't have an account? Sign up
           </Text>
         </TouchableOpacity>
       </SafeAreaView>
